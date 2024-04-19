@@ -7,6 +7,8 @@ from trips
 limit 10
 
 ---------------------------------------------- 
+
+/* - Are there any null values in any columns in either table? */
  
 select count(*) as total_number_of_null
 from scooters
@@ -44,7 +46,7 @@ select count(*) as total_number_of_null
 from scooters
 where companyname IS NULL  /*0*/
 
--------------------------------------------------------------------- 
+
 
 select count(*) as total_number_of_null
 from trips
@@ -66,6 +68,8 @@ or triproute IS NULL
 or create_dt IS NULL
 
 --------------------------------------------------------------------
+
+/* - What date range is represented in each of the date columns? Investigate any values that seem odd. */
 
 select 
 	min(pubdatetime) as first_date,
@@ -96,6 +100,8 @@ from trips
 
 --------------------------------------------------------------------
 
+/* - Is time represented with am/pm or using 24 hour values in each of the columns that include time? */
+
 select *
 from scooters
 limit 10  /* pubdatetime uses 24 HR values*/
@@ -106,11 +112,15 @@ limit 5000 /* pubtimestamp, starttime, endtime uses 24 HR values*/
 
 --------------------------------------------------------------------
 
+/* - What values are there in the sumdgroup column? Are there any that are not of interest for this project? */
+
 select distinct sumdgroup
 from scooters
-/* bicycle, scooter, Scooter values are listed. Bicycles are irrelevant to our prohject. */
+/* bicycle, scooter, Scooter values are listed. Bicycles are irrelevant to our project. */
 
 --------------------------------------------------------------------
+
+/* - What are the minimum and maximum values for all the latitude and longitude columns? Do these ranges make sense, or is there anything surprising? */
 
 select *
 from trips
@@ -136,6 +146,10 @@ select
 	min(endlongitude) as min_end_lon	
 from trips
 
+--------------------------------------------------------------------
+
+/* - What is the range of values for trip duration and trip distance? Do these values make sense? Explore values that might seem questionable. */
+
 select 
 	min(tripduration) as min_duration,
 	max(tripduration) as max_duration,
@@ -145,20 +159,130 @@ from trips				/* negatives on the min durations and distances... why? */
 
 --------------------------------------------------------------------
 
-WITH companynames AS
+/* - Check out how the values for the company name column in the scooters table compare to those of the trips table. What do you notice? */
+
+WITH companyname_scooters AS
 
 (
-select distinct companyname as companyname_scooters
+select companyname as companyname_scooters
 from scooters
+group by companyname
+), 
 
-union all
+companyname_trips AS
 
-select distinct companyname as companyname_trips
+(
+select companyname as companyname_trips
 from trips
+group by companyname
 )
 
-select companyname_scooters, companyname_trips
-from companynames
+SELECT companyname_scooters, companyname_trips
+FROM companyname_scooters
+INNER JOIN companyname_trips
+ON (companyname)
+
+--------------------------------------------------------------------
+
+/* 1. During this period, seven companies offered scooters. How many scooters did each company have in this time frame? Did the number for each company change over time? Did scooter usage vary by company? */
+
+
+/* below query gives us each company name listed in the table*/
+select companyname as companyname_scooters
+from scooters
+group by companyname
+
+/* below query gives us total number of scooters - 10012 total scooters */
+select count(distinct sumdid)    
+from scooters 					
+where sumdgroup ilike 'scooter'
+
+/* below query shows the number of scooters per company*/
+SELECT
+	companyname, 
+	COUNT(distinct sumdid) as number_of_scooters_per_company
+FROM scooters
+WHERE sumdgroup ilike 'scooter'
+GROUP BY companyname
+
+
+select 
+	count(distinct sumdid) as scooter_id,
+	companyname,
+	to_char(pubdatetime, 'MM/DD/YY')::date as date_time
+from scooters
+-- where pubdatetime <= '05/31/2019' 
+group by companyname, date_time
+
+
+
+WITH May_scooters AS
+
+(	SELECT
+		companyname, 
+		COUNT(distinct scooter_id) as number_of_scooters_for_May
+	FROM (select companyname, sumdid as scooter_id, to_char(pubdatetime, 'MM/DD/YY')::date as date_time from scooters where sumdgroup ilike 'scooter')
+ 	WHERE date_time <= '05/31/2019'
+ 	GROUP BY companyname
+),
+
+June_scooters AS
+
+(	SELECT
+		companyname, 
+		COUNT(distinct scooter_id) as number_of_scooters_for_June
+	FROM (select companyname, sumdid as scooter_id, to_char(pubdatetime, 'MM/DD/YY')::date as date_time from scooters where sumdgroup ilike 'scooter')
+ 	WHERE date_time BETWEEN '06/01/2019' AND '06/30/2019'
+ 	GROUP BY companyname
+),
+
+July_scooters AS
+
+(	SELECT
+		companyname, 
+		COUNT(distinct scooter_id) as number_of_scooters_for_July
+	FROM (select companyname, sumdid as scooter_id, to_char(pubdatetime, 'MM/DD/YY')::date as date_time from scooters where sumdgroup ilike 'scooter')
+ 	WHERE date_time >= '07/01/2019'
+	GROUP BY companyname
+)
+
+SELECT *
+FROM May_scooters
+FULL JOIN June_scooters
+USING (companyname)
+FULL JOIN July_scooters
+USING (companyname)
+
+
+
+select 
+	companyname,
+	sumdid as scooter_id,
+	to_char(pubdatetime, 'MM/DD/YY')::date as date_time
+from scooters
+limit 10
+
+
+	
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

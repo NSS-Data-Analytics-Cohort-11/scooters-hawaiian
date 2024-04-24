@@ -69,9 +69,45 @@ group by companyname
 
 
 
-SELECT pubtimestamp, companyname, sumdid, startdate, starttime, enddate, endtime, triproute
+SELECT pubtimestamp, companyname, sumdid, startdate, starttime, enddate, endtime, startlatitude, startlongitude, endlatitude, endlongitude
 FROM trips
-WHERE tripduration BETWEEN 1 AND 24
+WHERE tripduration BETWEEN 1 AND 1440
+
+
+--Q3
+with usage_per_day as(
+	select companyname,
+		   sumdid as scooter_ID,
+		   cast(pubtimestamp as date) as date,
+		   count(*) as trips_per_scooter
+	from trips
+	where tripduration between 1 and 1440
+	group by date, sumdid, companyname
+	--having count(*) >= 3
+	order by date, companyname), -- this CTE gives you the count of trips per scooter type, per company, per date
+	
+	avg_per_day as(
+	select companyname,
+		   avg(trips_per_scooter) as avg_trips_per_scooter,
+		   date
+	from usage_per_day
+	group by date, companyname
+	order by date, companyname) -- this CTE is attached to the 1st one and it gives you the avg trips per scooter, per company, per date
+------------------------------------------------------------------------------------------
+select companyname, avg(avg_trips_per_scooter) as total_avg_scooter_trips
+from avg_per_day
+group by companyname
+order by companyname  -- this MAIN Query gives you the total average scooter trips per company
+-- --ANSWER
+-- "Bird"	1.85003737842772272778
+-- "Bolt Mobility"	1.8464552289275451
+-- "Gotcha"	2.20508004407105770545
+-- "JUMP"	39.87647109343293355510
+-- "Lime"	3.99753548754437786087
+-- "Lyft"	2.79628776729803033978
+-- "SPIN"	1.92434071044459232785
+
+
 
 
 SELECT * FROM trips LIMIT 1000

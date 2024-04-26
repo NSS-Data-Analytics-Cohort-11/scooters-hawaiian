@@ -192,7 +192,12 @@ LIMIT 100
 -- WHERE tripduration < 1 OR tripduration > 1440
 -- GROUP BY companyname
 
-SELECT DISTINCT(companyname), ROUND(AVG(trips_taken),0) AS avg_trips_taken
+WITH chargelevel AS (SELECT chargelevel
+FROM scooters
+WHERE chargelevel > 0)
+	
+
+SELECT DISTINCT(companyname), ROUND(AVG(trips_taken),2) AS avg_trips_taken
 FROM(SELECT companyname, date_time, sumdid, COUNT(sumdid) AS trips_taken
 FROM(SELECT companyname, date_time, sumdid
 FROM(SELECT *, to_char(pubtimestamp, 'MM/DD/YY')::date AS date_time
@@ -201,6 +206,10 @@ WHERE tripduration > 1 OR tripduration < 1440))
 GROUP BY companyname,date_time, sumdid)
 GROUP BY companyname
 
+
+
+
+	
 -- SELECT COUNT(DISTINCT triprecordnum), COUNT(DISTINCT sumdid), COUNT(DISTINCT triprecordnum) / COUNT(DISTINCT sumdid)  
 -- FROM trips
 -- WHERE companyname = 'Lime'
@@ -213,5 +222,14 @@ GROUP BY companyname
 SELECT DISTINCT(triprecordnum),pubtimestamp
 FROM trips
 
+-- Last part for QS 4
+SELECT* 
+	FROM trips
+	LIMIT 10
 
+SELECT CONCAT(startlatitude,' ', startlongitude) AS start_cords, CONCAT(endlatitude,' ', endlongitude) AS end_cords
+FROM trips
+LIMIT 100
 
+SELECT *
+FROM trips

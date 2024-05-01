@@ -22,14 +22,19 @@ As you know, it's important to gain an understanding of new datasets before divi
 - Check out how the values for the company name column in the scooters table compare to those of the trips table. What do you notice?
 
 Once you've gotten an understanding of what is contained in the available tables, start with addressing these questions:
+
 1. During this period, seven companies offered scooters. How many scooters did each company have in this time frame? Did the number for each company change over time? Did scooter usage vary by company?
+
 2. According to Second Substitute Bill BL2018-1202 (as amended) (https://web.archive.org/web/20181019234657/https://www.nashville.gov/Metro-Clerk/Legislative/Ordinances/Details/7d2cf076-b12c-4645-a118-b530577c5ee8/2015-2019/BL2018-1202.aspx), all permitted operators will first clean data before providing or reporting data to Metro. Data processing and cleaning shall include:  
 * Removal of staff servicing and test trips  
 * Removal of trips below one minute  
 * Trip lengths are capped at 24 hours  
 Are the scooter companies in compliance with the second and third part of this rule? 
+
 3. The goal of Metro Nashville is to have each scooter used a minimum of 3 times per day. Based on the data, what is the average number of trips per scooter per day? Make sure to consider the days that a scooter was available. How does this vary by company?
+
 4. Metro would like to know how many scooters are needed, and something that could help with this is knowing peak demand. Estimate the highest count of scooters being used at the same time. When were the highest volume times? Does this vary by zip code or other geographic region?
+
 5. **Stretch Goal:** SUMDs can provide alternative transportation and provide "last mile" access to public transit. How often are trips starting near public transit hubs? You can download a dataset of bus stop locations from https://data.nashville.gov/Transportation/WeGo-Transit-Bus-Stops/vfe9-k7vc/about_data.
 
 Deliverables:

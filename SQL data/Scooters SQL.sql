@@ -168,10 +168,18 @@ ORDER BY total_usage DESC
 -- Trip lengths are capped at 24 hours
 -- Are the scooter companies in compliance with the second and third part of this rule?
 
-SELECT companyname, COUNT(companyname) 
+SELECT companyname, sumdid, COUNT(tripduration)
+FROM trips
+WHERE tripduration < 1 OR tripduration > 1440
+
+	
+SELECT companyname, COUNT(companyname) AS company_errors
 FROM trips
 WHERE tripduration < 1 OR tripduration > 1440
 GROUP BY companyname
+
+SELECT DISTINCT companyname
+	FROM trips
 -- They are not in compliance with the second and third parts of the rules and tthere are over 16000 data points that show either a time of less then a minute (1) or ones that go well over 24 hours (1440)
 
 --The goal of Metro Nashville is to have each scooter used a minimum of 3 times per day. Based on the data, what is the average number of trips per scooter per day? Make sure to consider the days that a scooter was available. How does this vary by company?
@@ -206,7 +214,9 @@ WHERE tripduration > 1 OR tripduration < 1440))
 GROUP BY companyname,date_time, sumdid)
 GROUP BY companyname
 
-
+SELECT ROUND(AVG(tripduration))
+FROM trips
+WHERE tripduration > 1 OR tripduration < 1440
 
 
 	
